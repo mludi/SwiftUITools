@@ -23,15 +23,15 @@ Code that makes my life in SwiftUI easier:
           VStack {
               HStack {
                   Text("a very long")
-                      .frame(minWidth: minWidth)
                       .read(leftColumnWidth)
+                      .frame(minWidth: minWidth)
                   Text("text")
               }
               HStack {
                   Text("short")
-                      .frame(minWidth: minWidth)
                       .read(leftColumnWidth)
-                  Text("text")
+                      .frame(minWidth: minWidth)
+                Text("text")
               }
           }
           .assignMaxPreference(for: leftColumnWidth.key, to: $minWidth)
