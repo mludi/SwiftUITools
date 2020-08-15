@@ -41,11 +41,11 @@ extension GeometryPreferenceReader: ViewModifier {
 }
 
 extension View {
-    func read<K: PreferenceKey, V>(_ preference: GeometryPreferenceReader<K, V>) -> some View {
+    public func read<K: PreferenceKey, V>(_ preference: GeometryPreferenceReader<K, V>) -> some View {
         self.modifier(preference)
     }
 
-    func assignMaxPreference<K: PreferenceKey>(for key: K.Type, to binding: Binding<CGFloat?>) -> some View where K.Value == [CGFloat] {
+    public func assignMaxPreference<K: PreferenceKey>(for key: K.Type, to binding: Binding<CGFloat?>) -> some View where K.Value == [CGFloat] {
         return self.onPreferenceChange(key.self) { preferences in
             binding.wrappedValue = preferences.max() ?? CGFloat.zero
         }
