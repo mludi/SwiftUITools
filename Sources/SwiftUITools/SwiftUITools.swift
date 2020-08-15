@@ -23,6 +23,11 @@ public struct AppendValue<T: Preference>: PreferenceKey {
 public struct GeometryPreferenceReader<K: PreferenceKey, V> where K.Value == V {
     public let key: K.Type
     public let value: (GeometryProxy) -> V
+
+    public init(key: K.Type, value: @escaping (GeometryProxy) -> V) {
+        self.key = key
+        self.value = value
+    }
 }
 
 extension GeometryPreferenceReader: ViewModifier {
