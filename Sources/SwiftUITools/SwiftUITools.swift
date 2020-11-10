@@ -47,7 +47,9 @@ extension View {
 
     public func assignMaxPreference<K: PreferenceKey>(for key: K.Type, to binding: Binding<CGFloat?>) -> some View where K.Value == [CGFloat] {
         return self.onPreferenceChange(key.self) { preferences in
-            binding.wrappedValue = preferences.max() ?? CGFloat.zero
+            DispatchQueue.main.async {
+                binding.wrappedValue = preferences.max() ?? CGFloat.zero
+            }
         }
     }
 }
