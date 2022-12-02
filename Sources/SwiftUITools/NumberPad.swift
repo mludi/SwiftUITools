@@ -115,11 +115,13 @@ public struct NumberPad: View {
                     }
                 }
             }
-            if showDeleteButton {
-                GridRow {
-                    Spacer()
-                    Spacer()
+            GridRow {
+                Spacer()
+                Spacer()
+                if showDeleteButton {
                     view(for: "delete")
+                } else {
+                    view(for: "delete").hidden()
                 }
             }
         }
