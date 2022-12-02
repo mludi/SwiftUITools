@@ -33,11 +33,11 @@ struct PressedModifier: ViewModifier {
     }
 }
 
-struct ButtonEvent {
-    enum Modifier: CustomStringConvertible {
+public struct ButtonEvent {
+    public enum Modifier: CustomStringConvertible {
         case isLongPress
 
-        var description: String {
+        public var description: String {
             switch self {
             case .isLongPress:
                 return "long press"
@@ -45,8 +45,8 @@ struct ButtonEvent {
         }
     }
 
-    let key: String
-    let modifier: Modifier?
+    public let key: String
+    public let modifier: Modifier?
 
     init(key: String, modifier: Modifier? = nil) {
         self.key = key
@@ -95,7 +95,7 @@ struct NumberPadButton: View {
     static let Radius: CGFloat = 12
 }
 
-struct NumberPad: View {
+public struct NumberPad: View {
     var showDeleteButton: Bool
     var onPress: (ButtonEvent) -> Void
 
@@ -106,7 +106,7 @@ struct NumberPad: View {
         ["*", "0", "#"]
     ]
 
-    var body: some View {
+    public var body: some View {
         Grid(horizontalSpacing: 20, verticalSpacing: 20) {
             ForEach(keys, id: \.self) { row in
                 GridRow {
@@ -147,4 +147,11 @@ struct NumberPad: View {
         "0"         : ("0", "+"),
         "#"         : ("#", nil),
     ]
+}
+
+extension NumberPad {
+    public init(showDeleteButton: Bool = false, onPress: @escaping (ButtonEvent) -> Void) {
+        self.showDeleteButton = showDeleteButton
+        self.onPress = onPress
+    }
 }
