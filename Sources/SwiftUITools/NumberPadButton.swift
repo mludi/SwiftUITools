@@ -65,6 +65,7 @@ public struct NumberPadButton<T: View>: View {
     }
 
     @State private var pressed = false
+    @State private var disableShortTap = false
 
     let key: String
     let content: T
@@ -109,12 +110,18 @@ public struct NumberPadButton<T: View>: View {
             case .first:
                 onPress(.init(key: key, modifier: .control))
             default:
-                onPress(.init(key: key))
+                if (!disableShortTap) { onPress(.init(key: key)) }
             }
         }))
-        .simultaneousGesture(LongPressGesture(minimumDuration: 0.1).onEnded({ _ in
-            onPress(.init(key: key, modifier: .isLongPress))
-        }))
+        .simultaneousGesture(
+            LongPressGesture(minimumDuration: 0.1)
+                .onEnded({ _ in
+                    disableShortTap = true
+                    onPress(.init(key: key, modifier: .isLongPress))
+                    DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) {
+                        disableShortTap = false
+                    }
+                }))
 #endif
         .scaleEffect(pressed ? 0.9 : 1)
     }
