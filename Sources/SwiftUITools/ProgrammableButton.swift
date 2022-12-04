@@ -1,5 +1,5 @@
 //
-//  NumberPadButton.swift
+//  ProgrammableButton.swift
 //  
 //
 //  Created by Oliver Epper on 01.12.22.
@@ -23,24 +23,24 @@ public enum ProgrammableButton {
     }
 
     public struct Event {
-        public enum Modifier: CustomStringConvertible {
-            case isLongPress
-            case control
+        public struct Modifier: OptionSet {
+            public var rawValue: Int
 
-            public var description: String {
-                switch self {
-                case .isLongPress:
-                    return "long press"
-                case .control:
-                    return "control"
-                }
+            public init(rawValue: Int) {
+                self.rawValue = rawValue
             }
+
+            public static let longPress    = Modifier(rawValue: 1 << 0)
+            public static let shift        = Modifier(rawValue: 1 << 1)
+            public static let control      = Modifier(rawValue: 1 << 2)
+            public static let option       = Modifier(rawValue: 1 << 3)
+            public static let command      = Modifier(rawValue: 1 << 4)
         }
 
         public let key: Key
-        public let modifier: Modifier?
+        public let modifier: [Modifier]
 
-        public init(key: Key, modifier: Modifier? = nil) {
+        public init(key: Key, modifier: [Modifier] = []) {
             self.key = key
             self.modifier = modifier
         }
@@ -83,7 +83,7 @@ public enum ProgrammableButton {
                 case .first:
                     onPress(.init(key: key))
                 default:
-                    onPress(.init(key: key, modifier: .isLongPress))
+                    onPress(.init(key: key, modifier: [.longPress]))
                 }
             }))
 #endif
@@ -91,7 +91,7 @@ public enum ProgrammableButton {
             .simultaneousGesture(TapGesture().modifiers(.control).exclusively(before: TapGesture()).onEnded({ value in
                 switch value {
                 case .first:
-                    onPress(.init(key: key, modifier: .control))
+                    onPress(.init(key: key, modifier: [.control]))
                 default:
                     if (!disableShortTap) { onPress(.init(key: key)) }
                 }
@@ -100,7 +100,7 @@ public enum ProgrammableButton {
                 LongPressGesture(minimumDuration: 0.3)
                     .onEnded({ _ in
                         disableShortTap = true
-                        onPress(.init(key: key, modifier: .isLongPress))
+                        onPress(.init(key: key, modifier: [.longPress]))
                         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) {
                             disableShortTap = false
                         }
