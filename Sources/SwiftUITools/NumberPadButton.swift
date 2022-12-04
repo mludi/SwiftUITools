@@ -33,6 +33,20 @@ struct PressedModifier: ViewModifier {
     }
 }
 
+extension View {
+    func pressed(onChange: @escaping (PressedModifier.ButtonState) -> Void) -> some View {
+        modifier(PressedModifier(onChange: onChange))
+    }
+}
+
+public struct ButtonKey: Identifiable, Hashable {
+    public let id: String
+
+    public init(id: String) {
+        self.id = id
+    }
+}
+
 public struct ButtonEvent {
     public enum Modifier: CustomStringConvertible {
         case isLongPress
@@ -48,10 +62,10 @@ public struct ButtonEvent {
         }
     }
 
-    public let key: String
+    public let key: ButtonKey
     public let modifier: Modifier?
 
-    public init(key: String, modifier: Modifier? = nil) {
+    public init(key: ButtonKey, modifier: Modifier? = nil) {
         self.key = key
         self.modifier = modifier
     }
@@ -59,6 +73,7 @@ public struct ButtonEvent {
 
 
 public struct NumberPadButton<T: View>: View {
+
     @resultBuilder
     public struct ButtonContent {
         public static func buildBlock<T: View>(_ content: T) -> T { content }
@@ -67,13 +82,13 @@ public struct NumberPadButton<T: View>: View {
     @State private var pressed = false
     @State private var disableShortTap = false
 
-    let key: String
+    let key: ButtonKey
     let content: T
     let onPress: (ButtonEvent) -> Void
 
     let radius: CGFloat = 12
 
-    public init(key: String, onPress: @escaping (ButtonEvent) -> Void, @ButtonContent builder: () -> T) {
+    public init(key: ButtonKey, onPress: @escaping (ButtonEvent) -> Void, @ButtonContent builder: () -> T) {
         self.key = key
         self.onPress = onPress
         self.content = builder()
@@ -85,7 +100,7 @@ public struct NumberPadButton<T: View>: View {
             content
         }
         .contentShape(RoundedRectangle(cornerRadius: radius))
-        .modifier(PressedModifier(onChange: { state in
+        .pressed(onChange: { state in
             if state == .pressed {
                 pressed = true
             } else {
@@ -93,9 +108,9 @@ public struct NumberPadButton<T: View>: View {
                     pressed = false
                 }
             }
-        }))
+        })
 #if os(iOS)
-        .simultaneousGesture(TapGesture().exclusively(before: LongPressGesture(minimumDuration: 0.1)).onEnded({ value in
+        .simultaneousGesture(TapGesture().exclusively(before: LongPressGesture()).onEnded({ value in
             switch value {
             case .first:
                 onPress(.init(key: key))
@@ -114,7 +129,7 @@ public struct NumberPadButton<T: View>: View {
             }
         }))
         .simultaneousGesture(
-            LongPressGesture(minimumDuration: 0.1)
+            LongPressGesture(minimumDuration: 0.3)
                 .onEnded({ _ in
                     disableShortTap = true
                     onPress(.init(key: key, modifier: .isLongPress))
@@ -128,3 +143,4 @@ public struct NumberPadButton<T: View>: View {
 
     let Radius: CGFloat = 12
 }
+
