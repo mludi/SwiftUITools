@@ -38,9 +38,9 @@ public enum ProgrammableButton {
         }
 
         public let key: Key
-        public let modifier: [Modifier]
+        public let modifier: Modifier?
 
-        public init(key: Key, modifier: [Modifier] = []) {
+        public init(key: Key, modifier: Modifier? = nil) {
             self.key = key
             self.modifier = modifier
         }
@@ -83,7 +83,7 @@ public enum ProgrammableButton {
                 case .first:
                     onPress(.init(key: key))
                 default:
-                    onPress(.init(key: key, modifier: [.longPress]))
+                    onPress(.init(key: key, modifier: .longPress))
                 }
             }))
 #endif
@@ -91,7 +91,7 @@ public enum ProgrammableButton {
             .simultaneousGesture(TapGesture().modifiers(.control).exclusively(before: TapGesture()).onEnded({ value in
                 switch value {
                 case .first:
-                    onPress(.init(key: key, modifier: [.control]))
+                    onPress(.init(key: key, modifier: .control))
                 default:
                     if (!disableShortTap) { onPress(.init(key: key)) }
                 }
@@ -100,7 +100,7 @@ public enum ProgrammableButton {
                 LongPressGesture(minimumDuration: 0.3)
                     .onEnded({ _ in
                         disableShortTap = true
-                        onPress(.init(key: key, modifier: [.longPress]))
+                        onPress(.init(key: key, modifier: .longPress))
                         DispatchQueue.main.asyncAfter(deadline: .now() + .milliseconds(500)) {
                             disableShortTap = false
                         }
